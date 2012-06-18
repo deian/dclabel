@@ -405,18 +405,20 @@ type Priv = Component
 
 -- | Class extending 'Lattice', by allowing for the more relaxed label
 -- comparison  @canflowto_p@.
-class (Lattice a) => RelaxedLattice a where
+class (Lattice a) => RelaxedLattice p a where
         -- | Relaxed partial-order relation
-        canflowto_p :: TCBPriv -> a -> a -> Bool
+        canflowto_p :: p -> a -> a -> Bool
 
-
-instance RelaxedLattice DCLabel where
+instance RelaxedLattice Priv DCLabel where
   canflowto_p p l1 l2 =
     let l1' =  MkDCLabel { secrecy = (secrecy l1)
-                         , integrity = (and_component (priv p) (integrity l1)) }
-        l2' =  MkDCLabel { secrecy = (and_component (priv p) (secrecy l2))
+                         , integrity = (and_component p (integrity l1)) }
+        l2' =  MkDCLabel { secrecy = (and_component p (secrecy l2))
                          , integrity = (integrity l2) }
     in canflowto l1' l2' 
+
+instance RelaxedLattice TCBPriv DCLabel where
+  canflowto_p p = canflowto_p (priv p)
 
 
 -- | Given trusted privilege and a \"desired\" untrusted privilege,

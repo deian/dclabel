@@ -26,6 +26,9 @@ instance Lattice ILabel where
   canflowto (MkILabel l1) (MkILabel l2) =
     canflowto l1 { secrecy = emptyComponent } l2 { secrecy = emptyComponent }
 
-instance RelaxedLattice ILabel where
+instance RelaxedLattice Priv ILabel where
   canflowto_p p (MkILabel l1) (MkILabel l2) =
     canflowto_p p l1 { secrecy = emptyComponent } l2 { secrecy = emptyComponent }
+
+instance RelaxedLattice TCBPriv ILabel where
+  canflowto_p p = canflowto_p (priv p)
