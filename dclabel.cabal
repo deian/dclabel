@@ -38,8 +38,8 @@ Library
    ghc-options: -Wall -fno-warn-orphans
 
    Exposed-modules:
-       DCLabel.TCB,
        DCLabel.Core
+--     DCLabel.TCB,
 --     DCLabel.Safe,
 --     DCLabel.NanoEDSL,
 --     DCLabel.PrettyShow,
@@ -49,7 +49,7 @@ Library
 test-suite tests
   type: exitcode-stdio-1.0
   hs-source-dirs: tests
-  main-is: Tests.hs
+  main-is: Main.hs
 
   ghc-options:
     -Wall -threaded -rtsopts

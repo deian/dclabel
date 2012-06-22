@@ -46,6 +46,7 @@ module DCLabel.Core (
   -- * Clauses
   , Clause(..)
   -- * Components
+  -- $component
   , Component(..)
   , dcTrue, dcFalse
   , isTrue, isFalse
@@ -117,9 +118,9 @@ isFalse = (== dcFalse)
 -- Labels
 --
 
-{- $omponent
+{- $component
    A 'Component' is a conjunction of disjunctions of 'Principal's. A
-   'DCLabel' is simply a pair of such 'Components'. Hence, we define
+   'DCLabel' is simply a pair of such 'Component's. Hence, we define
    almost all operations in terms of this construct, from which the
    'DCLabel' implementation follows almost trivially.
 -}
@@ -131,7 +132,7 @@ data DCLabel = DCLabel { dcSecrecy   :: !Component
 
 -- | Label constructor
 dcLabel :: Component -> Component -> DCLabel
-dcLabel = DCLabel
+dcLabel c1 c2 = DCLabel (dcReduce c1) (dcReduce c2)
 
 
 -- | Minimal element of the DCLabel lattice, /bottom/ &#8869;,
