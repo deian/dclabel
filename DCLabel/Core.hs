@@ -48,7 +48,7 @@ module DCLabel.Core (
   -- * Components
   -- $component
   , Component(..)
-  , dcTrue, dcFalse
+  , dcTrue, dcFalse, dcFormula 
   , isTrue, isFalse
   -- * Labels
   , DCLabel(..), dcLabel
@@ -56,6 +56,7 @@ module DCLabel.Core (
   , canFlowTo, dcJoin, dcMeet
   -- * Internal
   , dcReduce, dcImplies
+  , dcAnd, dcOr
   ) where
 
 import           Data.String
@@ -105,6 +106,10 @@ dcTrue = DCFormula Set.empty
 -- | Logical @False@.
 dcFalse :: Component
 dcFalse = DCFalse
+
+-- | Arbitrary formula from a clause.
+dcFormula :: Set Clause -> Component
+dcFormula = DCFormula
 
 -- | Is the component @True@.
 isTrue :: Component -> Bool
