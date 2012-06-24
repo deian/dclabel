@@ -55,7 +55,7 @@ module DCLabel.Core (
   , dcTrue, dcFalse, dcFormula 
   , isTrue, isFalse
   -- * Labels
-  , DCLabel(..), dcLabel
+  , DCLabel(..), dcLabel, dcLabelNoReduce 
   , dcBot, dcTop, dcPub
   , canFlowTo, dcJoin, dcMeet
   -- * Internal
@@ -147,6 +147,9 @@ data DCLabel = DCLabel { dcSecrecy   :: !Component
 dcLabel :: Component -> Component -> DCLabel
 dcLabel c1 c2 = DCLabel (dcReduce c1) (dcReduce c2)
 
+-- | Label contstructor. Note: the components should already be reduced.
+dcLabelNoReduce :: Component -> Component -> DCLabel
+dcLabelNoReduce = DCLabel
 
 -- | Minimal element of the DCLabel lattice, /bottom/ &#8869;,
 -- such that @&#8869; &#8849; L@ for any label @L@.

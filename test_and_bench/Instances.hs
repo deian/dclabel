@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 
 module Instances where
 
@@ -9,8 +10,8 @@ import DCLabel.Privs.TCB
 import Data.Set hiding (map)
 
 instance Arbitrary Principal where
-  arbitrary = Principal `liftM` arbitrary
-  --arbitrary = Principal `liftM` (oneof $ map return ["A", "B", "C"])
+--  arbitrary = Principal `liftM` arbitrary
+  arbitrary = Principal `liftM` (oneof $ map return ["A", "B", "C"])
 
 instance Arbitrary Clause where
   arbitrary = Clause `liftM` arbitrary

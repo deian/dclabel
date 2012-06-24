@@ -5,9 +5,9 @@ import Test.Framework (Test, defaultMain)
 import Test.Framework.Providers.QuickCheck2 (testProperty)
 import Test.QuickCheck
 import Test.QuickCheck.Instances
-import DCLabel.Core
-import DCLabel.Privs
+import DCLabel
 import Data.Set hiding (map)
+import Data.Serialize
 
 import Instances
 
@@ -40,8 +40,8 @@ prop_dc_canFlowToP l1 l2 = forAll (arbitrary :: Gen DCPriv) $ \p ->
    l1 `canFlowTo` l2 ==> canFlowToP p l1 l2
 
 -- Check that labels flow to their join for DCLabels
-prop_DC_join :: DCLabel -> DCLabel -> Bool
-prop_DC_join l1 l2  = let l3 = l1 `dcJoin` l2
+prop_dc_join :: DCLabel -> DCLabel -> Bool
+prop_dc_join l1 l2  = let l3 = l1 `dcJoin` l2
                           t1 = l1 `canFlowTo` l3
                           t2 = l2 `canFlowTo` l3
                       in t1 && t2
@@ -114,12 +114,13 @@ prop_dc_bottom _ = forAll (arbitrary :: Gen DCLabel) $ \l -> dcBot `canFlowTo` l
 --	      lr' /= lr &&
 --	      canFlowTo lr' lr)
 --
----- | Test serialization.
---prop_DC_serialize :: DCLabel -> Bool
---prop_DC_serialize l = case decode (encode l) of
---                        Left _ -> False
---                        Right l' -> l == l'
---
+
+-- | Test serialization.
+prop_dc_serialize :: DCLabel -> Bool
+prop_dc_serialize l = case decode (encode l) of
+                        Left _ -> False
+                        Right l' -> l == l'
+
 main :: IO ()
 main = defaultMain tests
 --
@@ -129,15 +130,14 @@ tests = [
   , testProperty "Idempotence of function dcReduce"           prop_dcReduce_idem
   , testProperty "Property of top"                            prop_dc_top
   , testProperty "Property of bottom"                         prop_dc_bottom
-  , testProperty "Join operation"                             prop_DC_join
+  , testProperty "Join operation"                             prop_dc_join
   , testProperty "Join operation is the least upper bound"    prop_dc_join_lub
   , testProperty "Meet operation"                             prop_dc_meet
   , testProperty "Meet operation is the greatest lower bound" prop_dc_meet_glb
   , testProperty "DC labels form a partial order"             prop_dc_porder
   , testProperty "Flow check with privs is less restricting"  prop_dc_canFlowToP 
+  , testProperty "Serialization of DC labels"                 prop_dc_serialize
 --  , testProperty "lostar implementation"
 --                  (prop_lostar :: TCBPriv -> DCLabel -> DCLabel -> Property)
---  , testProperty "Serialization of DC labels"
---              (prop_DC_serialize :: DCLabel -> Bool)
   ]
 

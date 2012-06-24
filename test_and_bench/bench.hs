@@ -1,8 +1,7 @@
 
-module Bench where
+module Main (main) where
 
-import DCLabel.Core
-import DCLabel.Privs
+import DCLabel
 import Instances
 import Test.QuickCheck
 import Criterion.Main

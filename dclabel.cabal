@@ -44,7 +44,7 @@ Library
        DCLabel.Core
        DCLabel.Privs
        DCLabel.Privs.TCB
---     DCLabel.NanoEDSL,
+       DCLabel.Serialize
 --     DCLabel.PrettyShow,
 
 test-suite tests

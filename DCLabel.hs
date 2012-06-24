@@ -13,3 +13,4 @@ module DCLabel ( module DCLabel.Core
 import DCLabel.Core
 import DCLabel.Privs
 import DCLabel.NanoEDSL
+import DCLabel.Serialize
