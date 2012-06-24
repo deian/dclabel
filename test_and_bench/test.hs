@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Tests (main) where
+module Main (main) where
 
 import Test.Framework (Test, defaultMain)
 import Test.Framework.Providers.QuickCheck2 (testProperty)

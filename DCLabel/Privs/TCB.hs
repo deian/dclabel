@@ -5,15 +5,16 @@
 
 {-|
 
-This module implements DCLabel privileges. Since privilege objects may
-be used unsafely, this module is marked @-XUnsafe@. Untrusted code may
-access privileges using the interface provided by "DCLabel.Privs".
+This module implements the trusted compoenet of DCLabel privileges,
+documented in "DCLabel.Privs".
+Since privilege objects may be used unsafely, this module is marked
+@-XUnsafe@. Untrusted code may access privileges using the interface
+provided by "DCLabel.Privs".
 
 -}
 
 module DCLabel.Privs.TCB (
   -- * Privileges
-  -- $privs
     DCPrivDesc(..)
   , DCPriv(..), dcPrivTCB
   , allPrivTCB

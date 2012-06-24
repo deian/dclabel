@@ -12,7 +12,9 @@ Category:       Security
 Cabal-Version:  >=1.8
 
 Extra-source-files:
-     tests/Main.hs
+     test_and_bench/Test.hs
+     test_and_bench/Instances.hs
+     test_and_bench/Bench.hs
 
 Description:
         The /DC Label/ (DCLabel) library provides an information
@@ -39,26 +41,26 @@ Library
 
    Exposed-modules:
        DCLabel.Core
---     DCLabel.TCB,
---     DCLabel.Safe,
+       DCLabel.Privs
+       DCLabel.Privs.TCB
 --     DCLabel.NanoEDSL,
 --     DCLabel.PrettyShow,
---     DCLabel.Secrecy,
---     DCLabel.Integrity
 
 test-suite tests
   type: exitcode-stdio-1.0
-  hs-source-dirs: tests
-  main-is: Main.hs
+  hs-source-dirs: test_and_bench
+  main-is: test.hs
 
   ghc-options:
-    -Wall -threaded -rtsopts
+    -threaded -rtsopts
 
   build-depends:
     QuickCheck,
+    quickcheck-instances,
     test-framework,
     test-framework-quickcheck2,
     base,
+    containers,
     dclabel,
     bytestring,
     cereal
