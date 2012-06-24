@@ -29,7 +29,7 @@ description @P@ of type 'DCPrivDesc', any piece of code can use
 -}
 
 module DCLabel.Privs (
-    DCPrivDesc(..)
+    DCPrivDesc(..), dcPrivDesc
   , DCPriv
   , noPriv
   , dcDelegatePriv
@@ -41,6 +41,9 @@ import DCLabel.Core
 import DCLabel.Privs.TCB
 import qualified Data.Set as Set
 
+-- | Create a new privilege description.
+dcPrivDesc :: Component -> DCPrivDesc
+dcPrivDesc = DCPrivDesc
 
 -- | The empty privilege, or no privileges, corresponds to logical
 -- @True@.
@@ -74,7 +77,8 @@ class CanFlowToP p where
   canFlowToP :: p -> DCLabel -> DCLabel -> Bool
 
 instance CanFlowToP DCPrivDesc where
-  canFlowToP pd l1 l2 =
+  canFlowToP pd l1 l2 | pd == (DCPrivDesc dcTrue) = canFlowTo l1 l2
+                      | otherwise =
     let cp = unDCPrivDesc pd
         i1 = dcReduce $ dcIntegrity l1 `dcAnd` cp
         s2 = dcReduce $ dcSecrecy l2   `dcAnd` cp
@@ -82,3 +86,4 @@ instance CanFlowToP DCPrivDesc where
 
 instance CanFlowToP DCPriv where
   canFlowToP p = canFlowToP (unDCPriv p)
+

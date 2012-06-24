@@ -1,3 +1,7 @@
+{-# LANGUAGE CPP #-}
+#if defined(__GLASGOW_HASKELL__) && (__GLASGOW_HASKELL__ >= 702)
+{-# LANGUAGE Safe #-}
+#endif
 {-|
 
 This module implements Disjunction Category Labels (DCLabels).
@@ -42,7 +46,7 @@ because data vouched for by @P_1@ or @P_2@ is more permissive than just @P_1@
 
 module DCLabel.Core ( 
   -- * Principals
-    Principal(..)
+    Principal(..), principal
   -- * Clauses
   , Clause(..)
   -- * Components
@@ -76,6 +80,10 @@ type S8 = S8.ByteString
 -- untrusted it is.
 newtype Principal = Principal { principalName :: S8 }
   deriving (Eq, Ord, Show, Read)
+
+-- | Principal constructor
+principal :: S8 -> Principal
+principal = Principal
 
 instance IsString Principal where
   fromString = Principal . S8.pack
