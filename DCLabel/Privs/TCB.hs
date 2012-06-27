@@ -32,7 +32,7 @@ newtype DCPrivDesc = DCPrivDesc { unDCPrivDesc :: Component }
 -- ('DCPrivDesc') that may only be created by trusted code or
 -- delegated from an existing @DCPriv@.
 newtype DCPriv = DCPrivTCB { unDCPriv :: DCPrivDesc }
-  deriving (Eq, Show, Read)
+  deriving (Eq, Show)
 
 -- | The all privilege corresponds to logical @False@
 allPrivTCB :: DCPriv
