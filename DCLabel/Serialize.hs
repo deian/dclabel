@@ -5,7 +5,9 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-{- | This module provides instances for binary serialization of 'DCLabel's.  -}
+{- | This module provides instances for binary serialization of
+'DCLabel's. Specifically, we provide insgtances for @cereal@\'s
+@Data.Serialize@.  -}
 
 module DCLabel.Serialize () where
 

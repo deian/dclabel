@@ -1,10 +1,7 @@
 {-# LANGUAGE CPP #-}
 #if defined(__GLASGOW_HASKELL__) && (__GLASGOW_HASKELL__ >= 702)
-{-# LANGUAGE Trustworthy #-}
+{-# LANGUAGE Safe #-}
 #endif
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE FlexibleInstances #-}
 
 {-|
   This module implements a ``nano``, very simple, embedded domain
@@ -66,7 +63,8 @@ where
 -}
 
 module DCLabel.NanoEDSL ( -- * Operators
-			  (\/), (/\), toComponent
+			  (\/), (/\), ToComponent(..)
+                        , fromList, toList
                           -- * Aliases
                         , everybody, anybody
                         ) where
@@ -79,10 +77,13 @@ class ToComponent a where
   -- | Convert to 'Component'
   toComponent :: a -> Component
 
+-- | Identity of 'Component'.
 instance ToComponent Component where
   toComponent = id
+-- | Convert singleton 'Clause' to 'Component'.
 instance ToComponent Clause    where
   toComponent c = DCFormula $! Set.singleton c
+-- | Convert singleton 'Principal' to 'Component'.
 instance ToComponent Principal where
   toComponent p = toComponent . Clause $! Set.singleton p
 
@@ -90,10 +91,20 @@ infixl 7 \/
 infixl 6 /\\
 
 -- | Conjunction of two 'Principal'-based elements.
+-- 
+-- @
+-- infixl 6 /&#92;
+-- @
+--
 (/\) :: (ToComponent a, ToComponent b) => a -> b -> Component
 a /\ b = dcReduce $! toComponent a `dcAnd` toComponent b
 
 -- | Disjunction of two 'Principal'-based elements.
+-- 
+-- @
+-- infixl 7 \\/
+-- @
+--
 (\/) :: (ToComponent a, ToComponent b) => a -> b -> Component
 a \/ b = dcReduce $! toComponent a `dcOr` toComponent b
 
@@ -116,3 +127,16 @@ everybody = dcFalse
 --
 anybody :: Component
 anybody = dcTrue
+
+
+-- | Convert a 'Component' to a list of list of 'Principal's if the
+-- 'Component' does not have the value 'DCFalse'. In the latter case
+-- the function returns 'Nothing'.
+toList :: Component -> [[Principal]]
+toList DCFalse        = error "toList: Invalid use, expected DCFormula"
+toList (DCFormula cs) = map (Set.toList . unClause) $! Set.toList cs
+
+-- | Convert a list of list of 'Principal's to a 'Component'. Each
+-- inner list is considered to correspond to a 'Clause'.
+fromList :: [[Principal]] -> Component
+fromList ps = DCFormula . Set.fromList $! map (Clause . Set.fromList) ps
