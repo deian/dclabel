@@ -28,13 +28,13 @@ instance PrettyShow Principal where
 
 instance PrettyShow Clause where
   pShow c = let ps = map pShow . Set.toList $! unClause c
-            in parens . hsep $! punctuate (text "\\/") ps
+            in parens . hsep $! punctuate (text " \\/") ps
 
 instance PrettyShow Component where
   pShow c | isFalse c = text "False"
           | isTrue c  = text "True"
           | otherwise = let cs = map pShow . Set.toList $! unDCFormula c
-                        in hsep $! punctuate (text "/\\") cs
+                        in hsep $! punctuate (text " /\\") cs
                 
 instance PrettyShow DCLabel where 
   pShow l = let s = dcSecrecy l
