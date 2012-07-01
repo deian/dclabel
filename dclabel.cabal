@@ -12,9 +12,9 @@ Category:       Security
 Cabal-Version:  >=1.8
 
 Extra-source-files:
-     test_and_bench/Test.hs
+     test_and_bench/test.hs
      test_and_bench/Instances.hs
-     test_and_bench/Bench.hs
+     test_and_bench/bench.hs
 
 Description:
         The /DC Label/ (DCLabel) library provides an information flow
