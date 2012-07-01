@@ -12,7 +12,6 @@ of DCLabels see "DCLabel.Core".
 module DCLabel ( module DCLabel.Core
                , module DCLabel.Privs
                , module DCLabel.NanoEDSL
-               , module DCLabel.Serialize
                , module DCLabel.PrettyShow
                ) where
 

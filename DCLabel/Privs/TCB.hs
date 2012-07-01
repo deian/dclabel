@@ -2,6 +2,7 @@
 #if defined(__GLASGOW_HASKELL__) && (__GLASGOW_HASKELL__ >= 704)
 {-# LANGUAGE Unsafe #-}
 #endif
+{-# LANGUAGE DeriveDataTypeable #-}
 
 {-|
 
@@ -20,19 +21,20 @@ module DCLabel.Privs.TCB (
   , allPrivTCB
   ) where
 
+import Data.Typeable
 import DCLabel.Core
 
 -- | A privilege description is simply a conjunction of disjunctions.
 -- Unlike (actually minted) privileges (see 'DCPriv'), privilege
 -- descriptions may be created by untrusted code.
 newtype DCPrivDesc = DCPrivDesc { unDCPrivDesc :: Component }
-  deriving (Eq, Show, Read)
+  deriving (Eq, Show, Read, Typeable)
 
 -- | A privilege is a minted and protected privilege description
 -- ('DCPrivDesc') that may only be created by trusted code or
 -- delegated from an existing @DCPriv@.
 newtype DCPriv = DCPrivTCB { unDCPriv :: DCPrivDesc }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 -- | The all privilege corresponds to logical @False@
 allPrivTCB :: DCPriv

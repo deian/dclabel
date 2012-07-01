@@ -2,6 +2,7 @@
 #if defined(__GLASGOW_HASKELL__) && (__GLASGOW_HASKELL__ >= 702)
 {-# LANGUAGE Safe #-}
 #endif
+{-# LANGUAGE DeriveDataTypeable #-}
 {-|
 
 This module implements Disjunction Category Labels (DCLabels).
@@ -65,6 +66,7 @@ module DCLabel.Core (
 
 import           Data.String
 import qualified Data.ByteString.Char8 as S8
+import           Data.Typeable
 import           Data.Set (Set)
 import qualified Data.Set as Set
 
@@ -79,7 +81,7 @@ type S8 = S8.ByteString
 -- authority. Any piece of code can create principals, regardless of how
 -- untrusted it is.
 newtype Principal = Principal { principalName :: S8 }
-  deriving (Eq, Ord, Show, Read)
+  deriving (Eq, Ord, Show, Read, Typeable)
 
 -- | Principal constructor
 principal :: S8 -> Principal
@@ -96,7 +98,7 @@ instance IsString Principal where
 -- | A clause or disjunction category is a set of 'Principal's.
 -- Logically the set corresponds to a disjunction of the principals.
 newtype Clause = Clause { unClause :: Set Principal }
-  deriving (Eq, Ord, Show, Read)
+  deriving (Eq, Ord, Show, Read, Typeable)
 
 -- | A component is a set of clauses, i.e., a formula (conjunction of
 -- disjunction of 'Principal's). @DCFalse@ corresponds to logical
@@ -105,7 +107,7 @@ data Component = DCFalse
                  -- ^ Logical @False@
                | DCFormula { unDCFormula :: !(Set Clause) }
                  -- ^ Conjunction of disjunction categories
-  deriving (Eq, Show, Read)
+  deriving (Eq, Show, Read, Typeable)
 
 -- | Logical @True@.
 dcTrue :: Component
@@ -141,7 +143,7 @@ isFalse = (== dcFalse)
 -- | A @DCLabel@ is a pair of secrecy and integrity 'Component's.
 data DCLabel = DCLabel { dcSecrecy   :: !Component
                        , dcIntegrity :: !Component }
-  deriving (Eq, Show, Read)
+  deriving (Eq, Show, Read, Typeable)
 
 -- | Label constructor
 dcLabel :: Component -> Component -> DCLabel
