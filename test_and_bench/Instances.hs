@@ -8,10 +8,10 @@ import Test.QuickCheck.Instances
 import DCLabel.Core
 import DCLabel.Privs.TCB
 import Data.Set hiding (map)
+import qualified Data.ByteString.Char8 as S8
 
 instance Arbitrary Principal where
---  arbitrary = Principal `liftM` arbitrary
-  arbitrary = Principal `liftM` (oneof $ map return ["A", "B", "C"])
+  arbitrary = oneof $ map (\x -> return . Principal . S8.singleton $ x) ['A'..'Z']
 
 instance Arbitrary Clause where
   arbitrary = Clause `liftM` arbitrary
