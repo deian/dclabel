@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Instances where
+-- | Instances for "QuicCheck"\'s 'Arbitrary' class.
+module Instances () where
 
 import Control.Monad (liftM)
 import Test.QuickCheck
