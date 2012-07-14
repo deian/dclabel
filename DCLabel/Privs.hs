@@ -42,11 +42,6 @@ import           DCLabel.Core
 import           DCLabel.Privs.TCB
 import qualified Data.Set as Set
 
--- | The empty privilege, or no privileges, corresponds to logical
--- @True@.
-noPriv :: DCPriv
-noPriv = DCPrivTCB dcTrue
-
 
 -- | Given a privilege and a privilege description turn the privilege
 -- description into a privilege (i.e., mint). Such delegation succeeds

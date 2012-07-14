@@ -18,9 +18,10 @@ module DCLabel.Privs.TCB (
   -- * Privileges
     DCPrivDesc
   , DCPriv(..), dcPrivTCB
-  , allPrivTCB
+  , noPriv, allPrivTCB
   ) where
 
+import Data.Monoid
 import Data.Typeable
 import DCLabel.Core
 
@@ -34,6 +35,16 @@ type DCPrivDesc = Component
 -- delegated from an existing @DCPriv@.
 newtype DCPriv = DCPrivTCB { unDCPriv :: DCPrivDesc }
   deriving (Eq, Show, Typeable)
+
+-- | Privileges can be combined using 'mappend'
+instance Monoid DCPriv where
+  mempty = noPriv
+  mappend p1 p2 = DCPrivTCB . dcReduce $! (unDCPriv p1) `dcAnd` (unDCPriv p2)
+
+-- | The empty privilege, or no privileges, corresponds to logical
+-- @True@.
+noPriv :: DCPriv
+noPriv = DCPrivTCB dcTrue
 
 -- | The all privilege corresponds to logical @False@
 allPrivTCB :: DCPriv

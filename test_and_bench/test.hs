@@ -7,6 +7,7 @@ import Test.QuickCheck
 import Test.QuickCheck.Instances
 import DCLabel
 import DCLabel.Core
+import Data.Monoid
 import Data.Set hiding (map)
 import Data.Serialize
 
@@ -40,6 +41,11 @@ prop_dc_canFlowToP :: DCLabel -> DCLabel -> Property
 prop_dc_canFlowToP l1 l2 = forAll (arbitrary :: Gen DCPriv) $ \p ->
    l1 `canFlowTo` l2 ==> canFlowToP p l1 l2
 
+-- L_1 CanFlowTo_P1 L_2 ==> L_1 `CanFlowToP (P1 /\ P2)` L_2 for andy P2
+prop_dc_mappendPrivs :: DCLabel -> DCLabel -> DCPriv -> Property
+prop_dc_mappendPrivs l1 l2 p1 = forAll (arbitrary :: Gen DCPriv) $ \p2 ->
+   canFlowToP p1 l1 l2 ==> canFlowToP (p1 `mappend` p2) l1 l2
+
 -- Check that labels flow to their join for DCLabels
 prop_dc_join :: DCLabel -> DCLabel -> Bool
 prop_dc_join l1 l2  = let l3 = l1 `dcJoin` l2
@@ -48,8 +54,6 @@ prop_dc_join l1 l2  = let l3 = l1 `dcJoin` l2
                       in t1 && t2
 
 -- Check that join is the least upper bound for DCLabels
--- TODO: we need to fix this since it is difficult to satisfy the
--- hypothesis. 
 prop_dc_join_lub ::  DCLabel -> DCLabel -> Property
 prop_dc_join_lub l1 l2 = forAll (arbitrary :: Gen DCLabel) $ \l3' ->
  (l1 `canFlowTo` l3') && (l2 `canFlowTo` l3') ==> (l1 `dcJoin` l2) `canFlowTo` l3'
@@ -98,6 +102,7 @@ tests = [
   , testProperty "Meet operation is the greatest lower bound" prop_dc_meet_glb
   , testProperty "DC labels form a partial order"             prop_dc_porder
   , testProperty "Flow check with privs is less restricting"  prop_dc_canFlowToP 
+  , testProperty "Combined privileges are stronger"           prop_dc_mappendPrivs
   , testProperty "Serialization of DC labels"                 prop_dc_serialize
   ]
 
