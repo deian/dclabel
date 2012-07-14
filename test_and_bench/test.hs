@@ -77,45 +77,6 @@ prop_dc_top l1 = forAll (gen l1) $ \l -> l `canFlowTo` dcTop
 prop_dc_bottom :: DCLabel -> Property
 prop_dc_bottom _ = forAll (arbitrary :: Gen DCLabel) $ \l -> dcBot `canFlowTo` l
 
----- LIO's lostar
---lostar :: TCBPriv -> DCLabel -> DCLabel -> DCLabel
---lostar p l g = 
---  let (ls, li) = (toLNF . secrecy $ l, toLNF . integrity $ l)
---      (gs, gi) = (toLNF . secrecy $ g, toLNF . integrity $ g)
---      lp       = toLNF $ priv p
---      rs'      = c2l [c | c <- getCats ls
---                        , not (lp `implies` (c2l [c]))]
---      rs''     = c2l [c | c <- getCats gs
---                        , not (rs' `implies` (c2l [c]))]
---      rs       = if ls == allComponent || gs == allComponent
---                  then allComponent
---                  else rs' `and_component` rs''
---      ri       = (li `and_component` lp) `or_component` gi
--- in toLNF $ simpleNewComponent p (newDC rs ri)
---      where getCats = conj . component
---            c2l = MkComponent . MkConj
---            simpleNewComponent pr lr | pr == rootPrivTCB = g   
---                                     | pr == noPriv      = l `join` g
---                                     | otherwise         = lr
---
---{-
---lr = lostar p li lg satisfies:
---   - canFlowTo lg lr
---   - canFlowTo_p p li lr
---   - lr is the greatest lower bound
----}
---prop_lostar :: TCBPriv -> DCLabel -> DCLabel -> Property
---prop_lostar p li lg = 
---  let lr = lostar p li lg 
---  in forAll (arbitrary :: Gen DCLabel) $ \lr' -> 
---   	canFlowTo lg lr &&
---   	canFlowTo_p p li lr &&
---	not ( canFlowTo lg lr' &&
---              canFlowTo_p p li lr' &&
---	      lr' /= lr &&
---	      canFlowTo lr' lr)
---
-
 -- | Test serialization.
 prop_dc_serialize :: DCLabel -> Bool
 prop_dc_serialize l = case decode (encode l) of
@@ -138,7 +99,5 @@ tests = [
   , testProperty "DC labels form a partial order"             prop_dc_porder
   , testProperty "Flow check with privs is less restricting"  prop_dc_canFlowToP 
   , testProperty "Serialization of DC labels"                 prop_dc_serialize
---  , testProperty "lostar implementation"
---                  (prop_lostar :: TCBPriv -> DCLabel -> DCLabel -> Property)
   ]
 
