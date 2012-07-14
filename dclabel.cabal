@@ -4,8 +4,8 @@ build-type:     Simple
 License:        BSD3
 License-File:   LICENSE
 Copyright:      (c) 2012 Hails team
-Author:         Hails team
-Maintainer:	Deian Stefan  <deian at cs dot stanford dot edu>
+Author:         Hails Team
+Maintainer:	Hails Team  <hails-team at scs dot stanford dot edu>
 Stability:      experimental
 Synopsis:       The Disjunction Category Label Format
 Category:       Security
@@ -34,8 +34,7 @@ Library
    Build-depends: base >= 4 && < 5, 
                   bytestring >= 0.9.2 && < 1.0,
                   containers >= 0.3 && < 1.0,
-                  cereal >= 0.3.3 && < 0.4,
-                  pretty > 1.0.1 && < 2
+                  cereal >= 0.3.3 && < 0.4
 
    ghc-options: -Wall -fno-warn-orphans
 
@@ -45,8 +44,7 @@ Library
        DCLabel.Privs
        DCLabel.Privs.TCB
        DCLabel.Serialize
-       DCLabel.NanoEDSL
-       DCLabel.PrettyShow
+       DCLabel.DSL
 
 test-suite tests
   type: exitcode-stdio-1.0
@@ -63,6 +61,24 @@ test-suite tests
     test-framework-quickcheck2,
     base,
     containers,
+    dclabel,
+    bytestring,
+    cereal
+
+benchmark benchmarks
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test_and_bench
+  main-is: bench.hs
+
+  ghc-options:
+    -O2 -threaded -rtsopts
+
+  build-depends:
+    base,
+    QuickCheck,
+    quickcheck-instances,
+    containers,
+    criterion,
     dclabel,
     bytestring,
     cereal

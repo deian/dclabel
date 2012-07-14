@@ -49,7 +49,7 @@ module DCLabel.Core (
   -- * Principals
     Principal(..), principal
   -- * Clauses
-  , Clause(..)
+  , Clause(..), clause
   -- * Components
   -- $component
   , Component(..)
@@ -64,11 +64,12 @@ module DCLabel.Core (
   , dcAnd, dcOr
   ) where
 
-import           Data.String
 import qualified Data.ByteString.Char8 as S8
 import           Data.Typeable
 import           Data.Set (Set)
 import qualified Data.Set as Set
+
+import           Data.List (intercalate)
 
 type S8 = S8.ByteString
 
@@ -81,15 +82,14 @@ type S8 = S8.ByteString
 -- authority. Any piece of code can create principals, regardless of how
 -- untrusted it is.
 newtype Principal = Principal { principalName :: S8 }
-  deriving (Eq, Ord, Show, Read, Typeable)
+  deriving (Eq, Ord, Typeable)
+
+instance Show Principal where
+  show = S8.unpack . principalName
 
 -- | Principal constructor
 principal :: S8 -> Principal
 principal = Principal
-
-instance IsString Principal where
-  fromString = Principal . S8.pack
-
 
 --
 -- Category - disjunction clauses
@@ -98,7 +98,16 @@ instance IsString Principal where
 -- | A clause or disjunction category is a set of 'Principal's.
 -- Logically the set corresponds to a disjunction of the principals.
 newtype Clause = Clause { unClause :: Set Principal }
-  deriving (Eq, Ord, Show, Read, Typeable)
+  deriving (Eq, Ord, Typeable)
+
+instance Show Clause where
+  show c = let ps = map show . Set.toList $! unClause c
+           in parens . intercalate " \\/ " $! ps
+    where parens x = "[" ++ x ++ "]"
+
+-- | Clause constructor
+clause :: Set Principal -> Clause
+clause = Clause
 
 -- | A component is a set of clauses, i.e., a formula (conjunction of
 -- disjunction of 'Principal's). @DCFalse@ corresponds to logical
@@ -107,7 +116,14 @@ data Component = DCFalse
                  -- ^ Logical @False@
                | DCFormula { unDCFormula :: !(Set Clause) }
                  -- ^ Conjunction of disjunction categories
-  deriving (Eq, Show, Read, Typeable)
+  deriving (Eq, Typeable)
+
+instance Show Component where
+  show c | isFalse c = "|False"
+         | isTrue c  = "|True"
+         | otherwise = let cs = map show . Set.toList $! unDCFormula c
+                       in parens . intercalate " /\\ " $! cs
+    where parens x = "{" ++ x ++ "}"
 
 -- | Logical @True@.
 dcTrue :: Component
@@ -143,9 +159,15 @@ isFalse = (== dcFalse)
 -- | A @DCLabel@ is a pair of secrecy and integrity 'Component's.
 data DCLabel = DCLabel { dcSecrecy   :: !Component
                        , dcIntegrity :: !Component }
-  deriving (Eq, Show, Read, Typeable)
+  deriving (Eq, Typeable)
 
--- | Label constructor
+instance Show DCLabel where 
+  show l = let s = dcSecrecy l
+               i = dcIntegrity l
+           in "< " ++ show s ++ " , " ++ show i ++ " >"
+
+-- | Label constructor. Note that each component is first reduced to
+-- CNF.
 dcLabel :: Component -> Component -> DCLabel
 dcLabel c1 c2 = DCLabel (dcReduce c1) (dcReduce c2)
 

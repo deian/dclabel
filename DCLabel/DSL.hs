@@ -2,6 +2,8 @@
 #if defined(__GLASGOW_HASKELL__) && (__GLASGOW_HASKELL__ >= 702)
 {-# LANGUAGE Safe #-}
 #endif
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 {-|
   This module implements a ``nano``, very simple, embedded domain
@@ -43,11 +45,11 @@
   Consider the following, example:
 
   @
-     l1 = (\"Alice\" :: 'Principal')  '\/' (\"Bob\"  :: 'Principal') '/\' (\"Carla\"  :: 'Principal') 
-     l2 = (\"Alice\" :: 'Principal') '/\' (\"Carla\"  :: 'Principal') 
+     l1 = \"Alice\" '\/' \"Bob\" '/\' \"Carla\"
+     l2 = \"Alice\" '/\' \"Carla\"
      dc1 = 'dcLabel' l1 l2
-     dc2 = 'dcLabel' ('toComponent' (\"Djon\" :: 'Principal')) ('toComponent' (\"Alice\" :: 'Principal'))
-     pr = 'dcPrivTCB' . 'dcPrivDesc' $ (\"Alice\" :: 'Principal') '/\' (\"Carla\" :: 'Principal')
+     dc2 = 'dcLabel' ('toComponent' \"Djon\") ('toComponent' \"Alice\")
+     pr = 'dcPrivTCB' . 'dcPrivDesc' $ \"Alice\" '/\' \"Carla\"
   @
 
 where
@@ -62,15 +64,18 @@ where
 
 -}
 
-module DCLabel.NanoEDSL ( -- * Operators
-			  (\/), (/\), ToComponent(..)
-                        , fromList, toList
-                          -- * Aliases
-                        , everybody, anybody
-                        ) where
+module DCLabel.DSL ( -- * Operators
+	             (\/), (/\), ToComponent(..)
+                   , fromList, toList
+                     -- * Aliases
+                   , everybody, anybody
+                   ) where
 
-import DCLabel.Core
+import           DCLabel.Core
 import qualified Data.Set as Set
+import qualified Data.ByteString.Char8 as S8
+
+type S8 = S8.ByteString
 
 -- | Convert a type (e.g., 'Clause', 'Principal') to a label component.
 class ToComponent a where
@@ -86,6 +91,12 @@ instance ToComponent Clause    where
 -- | Convert singleton 'Principal' to 'Component'.
 instance ToComponent Principal where
   toComponent p = toComponent . Clause $! Set.singleton p
+-- | Convert singleton 'Principal' (in the form of a @ByteString@)to 'Component'.
+instance ToComponent S8 where
+  toComponent = toComponent . principal
+-- | Convert singleton 'Principal' (in the form of a 'String')to 'Component'.
+instance ToComponent String where
+  toComponent = toComponent . S8.pack
 
 infixl 7 \/
 infixl 6 /\\

@@ -31,8 +31,5 @@ instance Arbitrary DCLabel where
     i <- dcReduce `liftM` arbitrary
     return (dcLabel s i)
 
-instance Arbitrary DCPrivDesc where
-  arbitrary = DCPrivDesc `liftM` arbitrary
-
 instance Arbitrary DCPriv where
   arbitrary = DCPrivTCB `liftM` arbitrary

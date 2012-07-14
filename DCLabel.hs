@@ -11,12 +11,18 @@ of DCLabels see "DCLabel.Core".
 
 module DCLabel ( module DCLabel.Core
                , module DCLabel.Privs
-               , module DCLabel.NanoEDSL
-               , module DCLabel.PrettyShow
+               , module DCLabel.DSL
                ) where
 
-import DCLabel.Core
+import DCLabel.Core (
+    Principal, principal
+  , Clause, clause
+  , Component, dcTrue, dcFalse, dcFormula
+  , isTrue, isFalse
+  , DCLabel, dcLabel
+  , dcBot, dcTop, dcPub
+  , canFlowTo, dcJoin, dcMeet
+  )
 import DCLabel.Privs
-import DCLabel.NanoEDSL
-import DCLabel.Serialize
-import DCLabel.PrettyShow
+import DCLabel.DSL
+import DCLabel.Serialize ()

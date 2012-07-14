@@ -6,6 +6,7 @@ import Test.Framework.Providers.QuickCheck2 (testProperty)
 import Test.QuickCheck
 import Test.QuickCheck.Instances
 import DCLabel
+import DCLabel.Core
 import Data.Set hiding (map)
 import Data.Serialize
 

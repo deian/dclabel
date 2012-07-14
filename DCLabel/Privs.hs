@@ -2,6 +2,7 @@
 #if defined(__GLASGOW_HASKELL__) && (__GLASGOW_HASKELL__ >= 702)
 {-# LANGUAGE Trustworthy #-}
 #endif
+{-# LANGUAGE TypeSynonymInstances #-}
 {- |
 
 Privileges allow a piece of code to bypass certain information flow
@@ -29,7 +30,7 @@ description @P@ of type 'DCPrivDesc', any piece of code can use
 -}
 
 module DCLabel.Privs (
-    DCPrivDesc(..), dcPrivDesc
+    DCPrivDesc
   , DCPriv
   , noPriv
   , dcDelegatePriv
@@ -37,27 +38,22 @@ module DCLabel.Privs (
   , canFlowToP
   ) where
 
-import DCLabel.Core
-import DCLabel.Privs.TCB
+import           DCLabel.Core
+import           DCLabel.Privs.TCB
 import qualified Data.Set as Set
-
--- | Create a new privilege description.
-dcPrivDesc :: Component -> DCPrivDesc
-dcPrivDesc = DCPrivDesc
 
 -- | The empty privilege, or no privileges, corresponds to logical
 -- @True@.
 noPriv :: DCPriv
-noPriv = DCPrivTCB . DCPrivDesc $! dcTrue
+noPriv = DCPrivTCB dcTrue
 
 
 -- | Given a privilege and a privilege description turn the privilege
 -- description into a privilege (i.e., mint). Such delegation succeeds
 -- only if the supplied privilege implies the privilege description.
 dcDelegatePriv :: DCPriv -> DCPrivDesc -> Maybe DCPriv
-dcDelegatePriv p pd = let c  = unDCPrivDesc . unDCPriv $! p
-                          cd = unDCPrivDesc pd
-                      in if c `dcImplies` cd
+dcDelegatePriv p pd = let c  = unDCPriv $! p
+                      in if c `dcImplies` pd
                            then Just $! dcPrivTCB pd
                            else Nothing
 
@@ -67,7 +63,7 @@ dcDelegatePriv p pd = let c  = unDCPrivDesc . unDCPriv $! p
 -- the 'DCPriv' object contains one of the 'Principal's in the 'Clause'.
 -- This function can be used to make such checks.
 dcOwns :: DCPrivDesc -> Clause -> Bool
-dcOwns pd c = unDCPrivDesc pd `dcImplies` dcFormula (Set.singleton c)
+dcOwns pd c = pd `dcImplies` dcFormula (Set.singleton c)
 
 
 -- | Class used to implement the pre-order /can flow to/ given
@@ -77,11 +73,10 @@ class CanFlowToP p where
   canFlowToP :: p -> DCLabel -> DCLabel -> Bool
 
 instance CanFlowToP DCPrivDesc where
-  canFlowToP pd l1 l2 | pd == (DCPrivDesc dcTrue) = canFlowTo l1 l2
+  canFlowToP pd l1 l2 | pd == dcTrue = canFlowTo l1 l2
                       | otherwise =
-    let cp = unDCPrivDesc pd
-        i1 = dcReduce $ dcIntegrity l1 `dcAnd` cp
-        s2 = dcReduce $ dcSecrecy l2   `dcAnd` cp
+    let i1 = dcReduce $ dcIntegrity l1 `dcAnd` pd
+        s2 = dcReduce $ dcSecrecy l2   `dcAnd` pd
     in l1 { dcIntegrity = i1 } `canFlowTo` l2 { dcSecrecy = s2 }
 
 instance CanFlowToP DCPriv where
